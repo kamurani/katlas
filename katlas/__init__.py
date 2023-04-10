@@ -1,0 +1,3 @@
+
+class katlas(object):
+    pass
