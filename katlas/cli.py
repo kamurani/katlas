@@ -2,7 +2,7 @@
 
 import click
 
-from katlas import katlas
+from katlas.motif import SequenceMotif
 
 @click.group()
 def cli():
@@ -14,7 +14,13 @@ def search(motif):
     """Search for a motif in the database."""
     print(motif)
 
-if __name__ == '__main__':
+@cli.command()
+def main():
+    """Main entry point."""
+    example_motif = "PSVEPPLS*QETFSDL"
+    s = SequenceMotif(example_motif)
+    print(s)
 
+if __name__ == '__main__':
     cli()
-    
+

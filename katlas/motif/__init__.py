@@ -67,8 +67,10 @@ class SequenceMotif(object):
         # Make dataframe from motif dictionary. 
         # The keys are the column names and should be integers (sorted)
         # The values are the column values and should be strings
+
+        motif = {k: self._map_character(v) for k, v in self.motif.items()}
         df = pd.DataFrame(
-            self.motif,
+            motif,
             index=['Residue'],
         )
         df = df.reindex(sorted(df.columns), axis=1)
@@ -110,13 +112,13 @@ class SequenceMotif(object):
         
         for i in range(1, self.MAX_INDEX + 1):
             if acceptor_index + i < len(sequence):
-                self.motif[i] = self._map_character(sequence[acceptor_index + i])
+                self.motif[i] = sequence[acceptor_index + i]
             else:
                 self.motif[i] = self.truncation_character
         
         for i in range(-1, self.MIN_INDEX - 1, -1):
             if acceptor_index + i >= 0:
-                self.motif[i] = self._map_character(sequence[acceptor_index + i])
+                self.motif[i] = sequence[acceptor_index + i]
             else:
                 self.motif[i] = self.truncation_character
 
