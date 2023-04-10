@@ -1,5 +1,19 @@
 # katlas
-Python implementation of kinase motif atlas for substrate specificity analysis
+
+Python implementation of the kinase motif atlas for substrate specificity analysis.
+
+## TODO:
+
+- support `asterisk` and `central` positional formats. 
+- apply distribution statistics to find percentiles across kinome. 
+- include Ser/Thr favourability into motif score. 
+- clustering of profiles / sequence based clustering supported. 
+- able to plot heatmaps of profiles / generate sequence logos. 
+
+Somehow show importance of residues across kinases? (enrichment analysis? entropy?) 
+- and visualise the 'direction' or position of each residue in feature space (e.g. negatively charged)
+
+Able to work backwards and produce 'optimum' motif for a given kinase? (This may be what we use for 3D analysis) 
 
 
 ## Reference
