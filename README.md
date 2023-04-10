@@ -10,6 +10,9 @@ Python implementation of the kinase motif atlas for substrate specificity analys
 - clustering of profiles / sequence based clustering supported. 
 - able to plot heatmaps of profiles / generate sequence logos. 
 
+- add CLI 
+- phosphoproteome annotation framework (i.e. provide a `sequence_dir`, set of sites from a db, and the annotation is performed with autodownloading etc) 
+
 Somehow show importance of residues across kinases? (enrichment analysis? entropy?) 
 - and visualise the 'direction' or position of each residue in feature space (e.g. negatively charged)
 
