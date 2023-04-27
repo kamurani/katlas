@@ -4,35 +4,7 @@
 
 import pandas as pd
 
-amino_acids = {
-    
-    'A': 'Tryptophan',
-    'R': 'Arginine',
-    'N': 'Asparagine',
-    'D': 'Aspartic acid',
-    'C': 'Cysteine',
-    'E': 'Glutamic acid',
-    'Q': 'Glutamine',
-    'G': 'Glycine',
-    'H': 'Histidine',
-    'I': 'Isoleucine',
-    'L': 'Leucine',
-    'K': 'Lysine',
-    'M': 'Methionine',
-    'F': 'Phenylalanine',
-    'P': 'Proline',
-    'S': 'Serine',
-    'T': 'Threonine',
-    'Y': 'Tyrosine',
-    'V': 'Valine'
-}
-
-phospho_residues = {
-    's': 'pS',
-    't': 'pT',
-    'y': 'pY',
-}
-
+from katlas.utils.definitions import amino_acids, phospho_residues
 
 allowed_characters = list(amino_acids.keys()) + ['*', 'X', '_']
 
@@ -57,7 +29,7 @@ class SequenceMotif(object):
         self.name = name
         self.phospho_priming = phospho_priming
 
-        self.motif = {}
+        self._motif = {}
         
         if not self._validate_sequence():
             raise ValueError(f"Invalid sequence {self.sequence}")
@@ -68,9 +40,9 @@ class SequenceMotif(object):
         # The keys are the column names and should be integers (sorted)
         # The values are the column values and should be strings
 
-        motif = {k: self._map_character(v) for k, v in self.motif.items()}
+        _motif = {k: self._map_character(v) for k, v in self._motif.items()}
         df = pd.DataFrame(
-            motif,
+            _motif,
             index=['Residue'],
         )
         df = df.reindex(sorted(df.columns), axis=1)
@@ -91,7 +63,6 @@ class SequenceMotif(object):
         for letter in to_validate:
             if letter not in allowed_characters:
                 raise ValueError(f"Invalid character '{letter}' in sequence {self.sequence}")
-
         return True
 
     def _parse_string(self):
@@ -108,19 +79,19 @@ class SequenceMotif(object):
         acceptor_index = self.sequence.index('*') - 1 
         sequence = sequence.replace('*', '')
 
-        self.motif[0] = sequence[acceptor_index]
+        self._motif[0] = sequence[acceptor_index]
         
         for i in range(1, self.MAX_INDEX + 1):
             if acceptor_index + i < len(sequence):
-                self.motif[i] = sequence[acceptor_index + i]
+                self._motif[i] = sequence[acceptor_index + i]
             else:
-                self.motif[i] = self.truncation_character
+                self._motif[i] = self.truncation_character
         
         for i in range(-1, self.MIN_INDEX - 1, -1):
             if acceptor_index + i >= 0:
-                self.motif[i] = sequence[acceptor_index + i]
+                self._motif[i] = sequence[acceptor_index + i]
             else:
-                self.motif[i] = self.truncation_character
+                self._motif[i] = self.truncation_character
 
     def _map_character(self, char):
         if char in phospho_residues:
@@ -136,25 +107,33 @@ class SequenceMotif(object):
         Second row is amino acid residue
         """
         # Order the motifs dict by key 
-        sorted_keys = sorted(self.motif.keys())
+        sorted_keys = sorted(self._motif.keys())
         pos = ' '.join([
             str(i) 
             for i in sorted_keys])
         value = ' '.join([
-            self.motif[i] 
+            self._motif[i] 
             for i in sorted_keys])
 
         # Column formatting
-        col_width = max(len(str(word)) for row in (self.motif.keys(), self.motif.values()) for word in row) + 2  # padding
+        col_width = max(len(str(word)) for row in (self._motif.keys(), self._motif.values()) for word in row) + 2  # padding
       
         pos     = "".join(
             [str(i).ljust(col_width) for i in sorted_keys]
         )
         value   = "".join(
-            [self.motif[i].ljust(col_width) for i in sorted_keys]
+            [self._motif[i].ljust(col_width) for i in sorted_keys]
         )
         return '\n'.join((pos, value))
-        
+    
+    def to_dict(self):
+        return self._motif
+    
+    @property
+    def motif(self):
+        lst = sorted([(k, v) for k, v in self._motif.items()], key=lambda x: x[0])
+        return "".join([a[1] for a in lst])
+        #return self._motif
     
     def __repr__(self):
         """Pretty table for notebooks"""
@@ -175,15 +154,19 @@ class SequenceMotif(object):
             if key < self.MIN_INDEX or key > self.MAX_INDEX:
                 raise IndexError(f"Invalid index {key}")
             else:
-                return self.motif[key]
+                return self._motif[key]
         else:
             raise TypeError(f"Invalid key type {type(key)}")
         
 
 if __name__ == "__main__":
 
-    sm = SequenceMotif("S*")
+    string = "S*"
+    print(f"Input: {string}")
+    sm = SequenceMotif()
     print(sm)
 
-    sm = SequenceMotif("PSVEPPLs*QEtFSDL")
+    string = "PSVEPPLs*QEtFSDL"
+    sm = SequenceMotif(string)
+    print(f"Input: {string}")
     print(sm)
