@@ -13,8 +13,9 @@ class KinaseAtlas(object):
     
     def __init__(self) -> None:
         
-        self.pssm = PSSM.pssm
+        self._ser_thr_favourability = False 
 
+        self.pssm = PSSM.pssm
         cols = list(self.pssm.columns)
 
         # Remove any integers from the column strings 
@@ -25,17 +26,29 @@ class KinaseAtlas(object):
         cols = list(set(cols))
         self.allowed_chars = "".join(sorted(cols))
 
+    @property
+    def ser_thr_favourability(self):
+        return self._ser_thr_favourability
+    
+    @ser_thr_favourability.setter
+    def ser_thr_favourability(self, value: bool):
+        self._ser_thr_favourability = value
+
         
     def kinase_scores(
         self,   
-        motif: katlas.motif.SequenceMotif,  
-        consider_selectivity: bool = False, # consider S/T
+        motif, #: katlas.motif.SequenceMotif,  
+        consider_selectivity: bool = None, # consider S/T
+        
     ):
         """Calculate kinase scores for the given motif."""
+
+        favourability = consider_selectivity or self.ser_thr_favourability 
+
         motif = motif.to_dict()
         df = pd.DataFrame(self.pssm)
 
-        if consider_selectivity:
+        if favourability:
             raise NotImplementedError("S/T selectivity not implemented.")
 
         # For each position in the motif, filter the PSSM to only include the amino acid at that position
@@ -57,8 +70,8 @@ class KinaseAtlas(object):
         ]
 
         df = df[cols]
-        # Sum the scores for each kinase at each position
-        df = df.sum(axis=1)
+        # Take the product of the scores for each kinase at each position
+        df = df.product(axis=1)
         # log2 transform the scores
         df = df.apply(lambda x: np.log2(x)) 
 
@@ -69,6 +82,10 @@ class KinaseAtlas(object):
     
         #print("Kinase\t  Score (log2)")
         #print(df)
-
+    
         return df
+
+    def metadata(self):
+        """Return metadata for a given UniProt ID or motif."""
+        raise NotImplementedError("Metadata not implemented.")
 
