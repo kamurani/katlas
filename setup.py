@@ -18,11 +18,12 @@ setup(
         "binding", 
         "motif", 
         "protein",
-    ]
+    ],
     install_requires = [
         "numpy",
         "pandas",
         "biopython",
+        "ipython",
     ],
     packages = [
         "katlas",
