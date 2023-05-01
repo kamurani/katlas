@@ -3,19 +3,31 @@
 from setuptools import setup
 
 setup(
-    name='katlas', 
-    version='0.1', 
-    description="""
+    name = 'katlas', 
+    version = '0.1', 
+    description = """
         A python implementation of the substrate specificity atlas for the human kinome.
     """,
-    author="Cam İmran",
-    author_email="c.mcmenamie@unsw.edu.au",
-    url="https://github.com/kamurani/katlas",
-    license="Apache License 2.0",
-    packages=[
+    author = "Cam İmran",
+    author_email = "c.mcmenamie@unsw.edu.au",
+    url = "https://github.com/kamurani/katlas",
+    license = "Apache License 2.0",
+    keywords = [
+        "kinase",
+        "kinome",
+        "binding", 
+        "motif", 
+        "protein",
+    ]
+    install_requires = [
+        "numpy",
+        "pandas",
+        "biopython",
+    ],
+    packages = [
         "katlas",
     ],
-    entry_points={
+    entry_points = {
         "console_scripts": [
             "katlas = katlas.cli:main",
         ],
